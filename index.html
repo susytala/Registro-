@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ventas y Cobros</title>
+<meta name="description" content="Seguimiento de ventas, cobros, clientes y rentabilidad">
+<meta name="theme-color" content="#2d2040">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ventas">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#7c4fa0; --plum-d:#5a3478; --cream:#faf6ff; --paper:#fffcff;
+  --dark:#2d2040; --ink:#1e1030; --muted:#7a6890; --gold:#f0c060; --line:#e0d4f0;
+  --gris:#9a8fa8; --azul:#3b82f6; --violeta:#8b5cf6; --amarillo:#d4a017;
+  --naranja:#f97316; --rojo:#dc2626; --verde:#16a34a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Lora',Georgia,serif;background:var(--cream);color:var(--ink);line-height:1.5;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer;border:0}
+.sans,input,select,textarea,button,label{font-family:'Nunito',system-ui,sans-serif}
+.hidden{display:none!important}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:20;background:var(--dark);color:var(--cream);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 20px;padding-top:max(12px,env(safe-area-inset-top));box-shadow:0 2px 10px #0004}
+.logo{font-size:1.35rem;font-weight:600;letter-spacing:.3px;font-family:'Lora',Georgia,serif;white-space:nowrap}
+.logo span{color:var(--gold)}
+.logo small{font-size:.68rem;opacity:.7;font-family:'Nunito',sans-serif;font-weight:600;margin-left:2px}
+.h-actions{display:flex;align-items:center;gap:8px}
+.add-btn{background:var(--gold);color:var(--ink);padding:9px 16px;border-radius:999px;font-weight:800;font-size:.92rem}
+.pwa-install-btn{display:none;align-items:center;gap:5px;background:var(--plum);color:#fff;border-radius:999px;padding:7px 13px;font-size:.78rem;font-weight:700}
+.pwa-install-btn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--plum),#4a2870);color:#fff;text-align:center;padding:40px 20px 44px;position:relative;overflow:hidden}
+.hero>*{position:relative;z-index:1}
+.hero::after{content:"$";position:absolute;font-family:'Lora',serif;font-style:italic;font-size:14rem;line-height:1;opacity:.07;right:-10px;bottom:-60px;transform:rotate(-12deg);pointer-events:none;z-index:0}
+.eyebrow{font-size:.8rem;letter-spacing:.12em;opacity:.8;margin-bottom:8px;text-transform:uppercase;font-family:'Nunito',sans-serif}
+.hero h1{font-size:clamp(1.7rem,5.5vw,2.7rem);font-style:italic;margin-bottom:22px;line-height:1.2;font-weight:400}
+.hero h1 span{color:var(--gold)}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat{background:#ffffff1f;border-radius:16px;padding:10px 18px;min-width:120px;font-family:'Nunito',sans-serif}
+.stat small{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;opacity:.8}
+.stat b{font-size:1.15rem;font-weight:800}
+.stat.alerta b{color:#ffd0d0}
+.stat.ok b{color:#c9f5d7}
+
+/* TABS */
+main{max-width:1050px;margin:0 auto;padding:22px 16px 40px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;max-width:760px;margin:0 auto;position:sticky;top:57px;background:var(--cream);z-index:10;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:var(--paper);border:2px solid var(--line);color:var(--ink);padding:8px 18px;border-radius:999px;white-space:nowrap;font-size:.95rem;font-weight:600}
+.tab.on{background:var(--dark);color:var(--cream);border-color:var(--dark)}
+.wrap{max-width:760px;margin:0 auto}
+
+/* CARDS */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 3px 10px rgba(124,79,160,.08)}
+.card h3{font-size:1.1rem;line-height:1.3;margin-bottom:14px}
+.card .card{background:var(--cream);box-shadow:none}
+.card .card h3{margin-bottom:4px}
+.venta .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.venta h3{margin:0}
+.prod{font-size:.85rem;color:var(--muted);font-family:'Nunito',sans-serif;margin-top:2px}
+.monto{font-size:1.2rem;font-weight:600;color:var(--plum-d);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:7px;background:#f0eafc;border-radius:999px;padding:3px 11px 3px 9px;margin-top:9px;font-size:.75rem;font-weight:700;font-family:'Nunito',sans-serif;color:var(--ink)}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.gris{--c:var(--gris)}.azul{--c:var(--azul)}.violeta{--c:var(--violeta)}.amarillo{--c:var(--amarillo)}
+.naranja{--c:var(--naranja)}.rojo{--c:var(--rojo)}.verde{--c:var(--verde)}
+.small{font-size:.85rem;color:var(--muted);line-height:1.75;margin-top:10px;font-family:'Nunito',sans-serif}
+.small b{color:var(--ink);font-weight:700}
+.vacio{text-align:center;color:var(--muted);padding:34px 0;font-family:'Nunito',sans-serif}
+
+/* BOTONES */
+.btn{background:var(--plum);color:#fff;padding:10px 20px;border-radius:999px;font-weight:700;font-size:.9rem}
+.btn:active,.add-btn:active{transform:scale(.96)}
+.btn.sm{padding:7px 14px;font-size:.8rem}
+.btn.o{background:transparent;color:var(--plum);border:1.5px solid var(--line)}
+.btn.o:hover{border-color:var(--plum)}
+.btn.ok{background:transparent;color:var(--verde);border:1.5px solid var(--verde)}
+.btn.warn{background:transparent;color:#b45309;border:1.5px solid var(--gold)}
+.btn.del{background:transparent;color:var(--rojo);border:1.5px solid var(--line)}
+.btn.wa{background:#25d366;color:#fff}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+/* FORMULARIOS */
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.8rem;font-weight:700;color:var(--muted)}
+.f-inp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;font-size:15px;outline:none;background:#fff;color:var(--ink)}
+.f-inp:focus{border-color:var(--plum)}
+textarea.f-inp{min-height:84px;resize:vertical}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar .f-inp{flex:1 1 200px;width:auto}
+.toolbar select.f-inp{flex:0 1 190px}
+.total-prev{background:linear-gradient(135deg,var(--plum),var(--plum-d));color:#fff;border-radius:14px;padding:12px 16px;margin-top:14px;font-family:'Nunito',sans-serif;display:flex;justify-content:space-between;align-items:center}
+.total-prev small{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;opacity:.8}
+.total-prev b{font-size:1.4rem;font-weight:800}
+
+/* MENSAJES Y RESULTADOS */
+.mensaje,.reclamo{margin-top:16px;padding:14px 16px;background:var(--cream);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;white-space:pre-wrap;font-size:.88rem;line-height:1.65;color:#4a3d5c;font-family:'Nunito',sans-serif}
+.reclamo{margin-top:12px;font-size:.82rem}
+.resultado{margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--cream);font-family:'Nunito',sans-serif;font-size:.95rem}
+.fila{display:flex;justify-content:space-between;padding:4px 0}
+.fila span{color:var(--muted)}
+.veredicto{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:.85rem;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:12px;font-family:'Nunito',sans-serif}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+th{color:var(--muted);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+td:nth-child(3),td:nth-child(4),th:nth-child(3),th:nth-child(4){text-align:right}
+.tabla-scroll{overflow-x:auto}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:none;align-items:flex-end;justify-content:center}
+.modal-ov.on{display:flex}
+@media(min-width:620px){.modal-ov{align-items:center;padding:16px}}
+.modal-box{background:var(--paper);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:620px){.modal-box{border-radius:20px;max-width:560px}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-hdr h3{font-size:1rem;font-weight:800;margin:0;font-family:'Nunito',sans-serif}
+.modal-x{background:none;font-size:1.6rem;color:var(--muted);line-height:1}
+.modal-body{flex:1;overflow-y:auto;padding:16px 18px}
+.modal-ftr{padding:14px 18px;padding-bottom:max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:8px}
+.modal-ftr .btn{flex:1;padding:13px}
+
+/* TOAST */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--plum);color:#fff;padding:11px 22px;border-radius:999px;font-size:.88rem;font-weight:700;z-index:999;pointer-events:none;opacity:0;transition:opacity .25s;font-family:'Nunito',sans-serif;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+
+/* WHATSAPP FLOTANTE */
+.wa-flotante{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--paper);color:var(--ink);text-decoration:none;border:1.5px solid var(--line);border-radius:999px;font-size:.82rem;font-weight:700;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(45,32,64,.15);z-index:30}
+.wa-flotante::before{content:"";width:9px;height:9px;border-radius:50%;background:#25d366}
+
+/* PWA BANNER */
+#pwa-banner{display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:min(440px,calc(100vw - 24px));background:linear-gradient(135deg,var(--plum),#4a2870);border-radius:18px;padding:14px 16px;box-shadow:0 6px 24px rgba(124,79,160,.45);z-index:900;align-items:center;gap:12px}
+#pwa-banner .pba-icon{width:40px;height:40px;border-radius:10px;flex-shrink:0}
+#pwa-banner .pba-txt{flex:1;font-family:'Nunito',sans-serif}
+#pwa-banner .pba-ttl{font-weight:800;font-size:.85rem;color:#fff}
+#pwa-banner .pba-sub{font-size:.75rem;color:rgba(255,255,255,.78);line-height:1.35}
+#pwa-banner .pba-btns{display:flex;flex-direction:column;gap:6px}
+#pwa-banner .pba-install{background:#fff;color:var(--plum);border-radius:8px;padding:7px 12px;font-size:.78rem;font-weight:800}
+#pwa-banner .pba-no{background:none;color:rgba(255,255,255,.65);font-size:.72rem}
+
+/* FOOTER */
+footer{background:var(--dark);color:rgba(255,255,255,.6);text-align:center;padding:26px 16px 90px;font-size:.85rem;font-family:'Nunito',sans-serif;line-height:1.9}
+footer strong{color:rgba(255,255,255,.92)}
+footer .btn.o{color:#fff;border-color:rgba(255,255,255,.3);margin:6px 3px 0}
+footer .btn.o:hover{border-color:var(--gold);color:var(--gold)}
+
+@media(max-width:600px){
+  .f-grid{grid-template-columns:1fr}
+  .hero{padding:32px 16px 36px}
+  .stat{min-width:0;flex:1 1 90px;padding:9px 12px}
+  .logo small{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Ventas<span> y Cobros</span> <small>Precintos</small></div>
+  <div class="h-actions">
+    <button class="pwa-install-btn" id="pwa-install-btn" onclick="installPWA()">
+      <svg viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
+      <span>Instalar</span>
+    </button>
+    <button class="add-btn" onclick="nuevaVenta()">+ Venta</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="eyebrow">Precintos de seguridad</p>
+  <h1>Tus cobros,<br><span>siempre al día</span></h1>
+  <div class="stats">
+    <div class="stat"><small>Por cobrar</small><b id="resPendiente">$0,00</b></div>
+    <div class="stat alerta"><small>Vencido</small><b id="resVencido">$0,00</b></div>
+    <div class="stat ok"><small>Cobrado</small><b id="resCobrado">$0,00</b></div>
+  </div>
+</section>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button class="tab on" id="tab-ventas" onclick="mostrarPestana('ventas')">Ventas</button>
+    <button class="tab" id="tab-clientes" onclick="mostrarPestana('clientes')">Clientes</button>
+    <button class="tab" id="tab-whatsapp" onclick="mostrarPestana('whatsapp')">WhatsApp</button>
+    <button class="tab" id="tab-reclamo" onclick="mostrarPestana('reclamo')">Reclamo</button>
+    <button class="tab" id="tab-proveedores" onclick="mostrarPestana('proveedores')">Proveedores</button>
+    <button class="tab" id="tab-rentabilidad" onclick="mostrarPestana('rentabilidad')">Rentabilidad</button>
+  </div>
+
+  <!-- ========== VENTAS ========== -->
+  <section id="sec-ventas" class="wrap">
+    <div class="toolbar">
+      <input class="f-inp" id="buscador" placeholder="Buscar cliente, OC, remito o factura" oninput="render()">
+      <select class="f-inp" id="filtro" onchange="render()">
+        <option value="">Todos los estados</option>
+        <option value="Cotizado">Cotizado</option>
+        <option value="OC recibida">OC recibida</option>
+        <option value="Entregado">Entregado</option>
+        <option value="Facturado">Facturado</option>
+        <option value="Por vencer">Por vencer</option>
+        <option value="Vencido">Cobros vencidos</option>
+        <option value="Cobrado">Cobrado</option>
+      </select>
+      <button class="btn o" onclick="exportarCSV()">Exportar CSV</button>
+    </div>
+    <div id="lista"></div>
+  </section>
+
+  <!-- ========== CLIENTES ========== -->
+  <section id="sec-clientes" class="wrap hidden">
+    <div class="card">
+      <h3>Nuevo cliente</h3>
+      <div class="f-grid">
+        <div class="field"><label>Cliente / empresa</label><input class="f-inp" id="clienteNombre"></div>
+        <div class="field"><label>Rubro</label><input class="f-inp" id="clienteRubro"></div>
+        <div class="field"><label>WhatsApp</label><input class="f-inp" id="clienteWhatsApp" inputmode="tel" placeholder="Ej: 5491112345678"></div>
+        <div class="field"><label>Correo</label><input class="f-inp" id="clienteCorreo" type="email"></div>
+        <div class="field"><label>Zona / localidad</label><input class="f-inp" id="clienteZona"></div>
+        <div class="field"><label>Último contacto</label><input class="f-inp" id="clienteUltimoContacto" type="date"></div>
+        <div class="field full"><label>Notas</label><textarea class="f-inp" id="clienteNotas" placeholder="Necesidades, productos de interés, observaciones"></textarea></div>
+      </div>
+      <div class="acciones"><button class="btn" onclick="guardarCliente()">Guardar cliente</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Registrar compra</h3>
+      <div class="f-grid">
+        <div class="field full"><label>Cliente</label><select class="f-inp" id="compraCliente"></select></div>
+        <div class="field"><label>Producto</label><input class="f-inp" id="compraProducto" value="Precinto Nifty Lock 30 x 1,8 mm"></div>
+        <div class="field"><label>Cantidad</label><input class="f-inp" id="compraCantidad" type="number" inputmode="decimal" value="3"></div>
+        <div class="field"><label>Precio unitario</label><input class="f-inp" id="compraPrecio" type="number" inputmode="decimal" step="0.01" value="293.54"></div>
+        <div class="field"><label>Fecha</label><input class="f-inp" id="compraFecha" type="date"></div>
+        <div class="field full"><label>Número de OC</label><input class="f-inp" id="compraOC"></div>
+      </div>
+      <div class="acciones"><button class="btn" onclick="guardarCompra()">Guardar compra</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Clientes registrados</h3>
+      <div id="listaClientes"></div>
+    </div>
+  </section>
+
+  <!-- ========== WHATSAPP ========== -->
+  <section id="sec-whatsapp" class="wrap hidden">
+    <div class="card">
+      <h3>Generador de mensajes</h3>
+      <div class="f-grid">
+        <div class="field"><label>Cliente</label><input class="f-inp" id="waCliente"></div>
+        <div class="field"><label>WhatsApp del cliente</label><input class="f-inp" id="waTelefono" inputmode="tel" placeholder="Ej: 5491112345678"></div>
+        <div class="field"><label>Producto</label><input class="f-inp" id="waProducto"></div>
+        <div class="field"><label>Cantidad</label><input class="f-inp" id="waCantidad" type="number" inputmode="decimal"></div>
+        <div class="field"><label>Precio unitario</label><input class="f-inp" id="waPrecio" type="number" inputmode="decimal" step="0.01"></div>
+        <div class="field"><label>Número de OC</label><input class="f-inp" id="waOC"></div>
+        <div class="field"><label>Número de factura</label><input class="f-inp" id="waFactura"></div>
+        <div class="field"><label>Monto a cobrar</label><input class="f-inp" id="waMonto" type="number" inputmode="decimal" step="0.01"></div>
+        <div class="field full"><label>Vencimiento</label><input class="f-inp" id="waVencimiento" type="date"></div>
+      </div>
+      <div class="acciones">
+        <button class="btn o" onclick="generarMensaje('presentacion')">Presentación</button>
+        <button class="btn o" onclick="generarMensaje('cotizacion')">Cotización</button>
+        <button class="btn o" onclick="generarMensaje('seguimiento')">Seguimiento</button>
+        <button class="btn warn" onclick="generarMensaje('reclamo')">Reclamo de pago</button>
+      </div>
+      <div id="mensajeGenerado" class="mensaje hidden"></div>
+      <div class="acciones">
+        <button class="btn o" onclick="copiarMensaje()">Copiar mensaje</button>
+        <button class="btn wa" onclick="abrirWhatsApp()">Abrir WhatsApp</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== RECLAMO ========== -->
+  <section id="sec-reclamo" class="wrap hidden">
+    <div class="card">
+      <h3>Reclamo de pago</h3>
+      <div class="f-grid">
+        <div class="field full"><label>Cliente</label><input class="f-inp" id="rcCliente" placeholder="Buccolini"></div>
+        <div class="field"><label>Número de factura</label><input class="f-inp" id="rcFactura" placeholder="0001-00000234"></div>
+        <div class="field"><label>Monto</label><input class="f-inp" id="rcMonto" type="number" inputmode="decimal" step="0.01" placeholder="880.62"></div>
+        <div class="field"><label>Número de OC</label><input class="f-inp" id="rcOC" placeholder="4521"></div>
+        <div class="field"><label>Vencimiento</label><input class="f-inp" id="rcVencimiento" type="date"></div>
+        <div class="field"><label>Número de remito</label><input class="f-inp" id="rcRemito" placeholder="0101"></div>
+        <div class="field"><label>Fecha de entrega</label><input class="f-inp" id="rcEntrega" type="date"></div>
+      </div>
+      <div class="acciones">
+        <button class="btn warn" onclick="verReclamoForm()">Ver reclamo</button>
+        <button class="btn o" onclick="copiarReclamoForm()">Copiar</button>
+      </div>
+      <div id="rcMensaje" class="reclamo hidden"></div>
+    </div>
+  </section>
+
+  <!-- ========== PROVEEDORES ========== -->
+  <section id="sec-proveedores" class="wrap hidden">
+    <div class="card">
+      <h3>Registrar proveedor y costo</h3>
+      <div class="f-grid">
+        <div class="field"><label>Proveedor</label><input class="f-inp" id="provNombre"></div>
+        <div class="field"><label>Producto</label><input class="f-inp" id="provProducto"></div>
+        <div class="field"><label>Costo de compra</label><input class="f-inp" id="provCosto" type="number" inputmode="decimal" step="0.01"></div>
+        <div class="field"><label>Fecha</label><input class="f-inp" id="provFecha" type="date"></div>
+        <div class="field full"><label>Contacto</label><input class="f-inp" id="provContacto"></div>
+        <div class="field full"><label>Notas</label><textarea class="f-inp" id="provNotas" placeholder="Mínimo de compra, demora, calidad, etc."></textarea></div>
+      </div>
+      <div class="acciones"><button class="btn" onclick="guardarProveedor()">Guardar registro</button></div>
+    </div>
+    <div class="card">
+      <h3>Proveedores registrados</h3>
+      <div id="listaProveedores"></div>
+    </div>
+  </section>
+
+  <!-- ========== RENTABILIDAD ========== -->
+  <section id="sec-rentabilidad" class="wrap hidden">
+    <div class="card">
+      <h3>Calculadora de rentabilidad</h3>
+      <div class="f-grid">
+        <div class="field"><label>Cantidad</label><input class="f-inp" id="rentCantidad" type="number" inputmode="decimal" value="3"></div>
+        <div class="field"><label>Costo unitario</label><input class="f-inp" id="rentCostoUnitario" type="number" inputmode="decimal" step="0.01"></div>
+        <div class="field"><label>Precio de venta unitario</label><input class="f-inp" id="rentPrecioVenta" type="number" inputmode="decimal" step="0.01" value="293.54"></div>
+        <div class="field"><label>Costo de envío total</label><input class="f-inp" id="rentEnvio" type="number" inputmode="decimal" step="0.01"></div>
+        <div class="field full"><label>Descuento total</label><input class="f-inp" id="rentDescuento" type="number" inputmode="decimal" step="0.01"></div>
+      </div>
+      <div class="acciones"><button class="btn" onclick="calcularRentabilidad()">Calcular</button></div>
+      <div id="resultadoRentabilidad" class="resultado hidden"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>Ventas y Cobros</strong><br>
+  Tus datos quedan guardados en este dispositivo.<br>
+  <button class="btn o sm" onclick="exportarRespaldo()">Descargar respaldo</button>
+  <button class="btn o sm" onclick="document.getElementById('archivoRespaldo').click()">Restaurar respaldo</button>
+  <input id="archivoRespaldo" type="file" accept=".json,application/json" class="hidden" onchange="importarRespaldo(this)">
+</footer>
+
+<a class="wa-flotante" href="https://wa.me/5492615692297" target="_blank" rel="noopener">Contacto por WhatsApp</a>
+
+<!-- MODAL VENTA -->
+<div class="modal-ov" id="modal-venta" onclick="if(event.target===this)cerrarModalVenta()">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3 id="tituloForm">Nueva venta</h3>
+      <button class="modal-x" onclick="cerrarModalVenta()" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="f-grid">
+        <div class="field"><label>Cliente</label><input class="f-inp" id="cliente"></div>
+        <div class="field"><label>Producto</label><input class="f-inp" id="producto"></div>
+        <div class="field"><label>Cantidad de packs</label><input class="f-inp" id="cantidad" type="number" inputmode="decimal" oninput="calcularTotal()"></div>
+        <div class="field"><label>Precio por pack</label><input class="f-inp" id="precio" type="number" inputmode="decimal" step="0.01" oninput="calcularTotal()"></div>
+        <div class="field"><label>Número de OC</label><input class="f-inp" id="oc"></div>
+        <div class="field"><label>Fecha de OC</label><input class="f-inp" id="fechaOC" type="date"></div>
+        <div class="field"><label>Fecha de entrega</label><input class="f-inp" id="fechaEntrega" type="date"></div>
+        <div class="field"><label>Número de remito</label><input class="f-inp" id="numeroRemito"></div>
+        <div class="field"><label>Fecha de factura</label><input class="f-inp" id="fechaFactura" type="date"></div>
+        <div class="field"><label>Número de factura</label><input class="f-inp" id="numeroFactura"></div>
+        <div class="field"><label>Vencimiento</label><input class="f-inp" id="fechaVencimiento" type="date"></div>
+        <div class="field"><label>Contacto de pagos</label><input class="f-inp" id="contactoPagos" placeholder="Correo o teléfono"></div>
+        <div class="field full">
+          <label>Remito firmado</label>
+          <select class="f-inp" id="remitoFirmado"><option value="No">No</option><option value="Sí">Sí</option></select>
+        </div>
+        <div class="field full"><label>Notas</label><textarea class="f-inp" id="notas"></textarea></div>
+      </div>
+      <div class="total-prev"><small>Total final</small><b id="totalPreview">$0,00</b></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn o" onclick="cerrarModalVenta()">Cancelar</button>
+      <button class="btn" onclick="guardarVenta()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PWA BANNER -->
+<div id="pwa-banner">
+  <img class="pba-icon" src="icon-192.png" alt="">
+  <div class="pba-txt">
+    <div class="pba-ttl">Instalá la app</div>
+    <div class="pba-sub" id="pba-sub">Abrila desde tu pantalla de inicio, incluso sin conexión.</div>
+  </div>
+  <div class="pba-btns">
+    <button class="pba-install" id="pba-install" onclick="installPWA()">Instalar</button>
+    <button class="pba-no" onclick="cerrarBanner(true)">Ahora no</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+const dinero = n => "$" + n.toLocaleString("es-AR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fecha = f => f ? f.split("-").reverse().join("/") : "—";
+const fechaOBlancos = f => f ? f.split("-").reverse().join("/") : "___";
+const totalVenta = v => (v.cantidad || 0) * (v.precio || 0);
+function limpiarCampos(ids) { ids.forEach(id => $(id).value = ""); }
+
+function leer(clave) {
+  try { const d = JSON.parse(localStorage.getItem(clave) || "[]"); return Array.isArray(d) ? d : []; }
+  catch (e) { return []; }
+}
+function escribir(clave, valor) {
+  try { localStorage.setItem(clave, JSON.stringify(valor)); }
+  catch (e) { toast("No se pudo guardar en este navegador."); }
+}
+
+// Fecha de hoy según la hora local (evita desfasajes por huso horario)
+function hoyLocal() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function diasHasta(f) {
+  const [a, m, d] = f.split("-").map(Number), [ha, hm, hd] = hoyLocal().split("-").map(Number);
+  return Math.round((Date.UTC(a, m - 1, d) - Date.UTC(ha, hm - 1, hd)) / 86400000);
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 2400);
+}
+
+function copiarTexto(texto, aviso) {
+  const alTerminar = () => toast(aviso);
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(texto).then(alTerminar).catch(() => copiarRespaldo(texto, alTerminar));
+  } else {
+    copiarRespaldo(texto, alTerminar);
+  }
+}
+function copiarRespaldo(texto, alTerminar) {
+  const area = document.createElement("textarea");
+  area.value = texto;
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+  try { document.execCommand("copy"); alTerminar(); } catch (e) { toast("No se pudo copiar."); }
+  document.body.removeChild(area);
+}
+
+/* ---------- navegación ---------- */
+const PESTANAS = ["ventas", "clientes", "whatsapp", "reclamo", "proveedores", "rentabilidad"];
+function mostrarPestana(nombre) {
+  PESTANAS.forEach(p => {
+    $("sec-" + p).classList.add("hidden");
+    $("tab-" + p).classList.remove("on");
+  });
+  $("sec-" + nombre).classList.remove("hidden");
+  $("tab-" + nombre).classList.add("on");
+  $("tab-" + nombre).scrollIntoView({inline: "center", block: "nearest"});
+  const top = document.querySelector("main").offsetTop - 56;
+  if (window.scrollY > top) window.scrollTo({top, behavior: "smooth"});
+}
+
+/* ---------- respaldo ---------- */
+const CLAVES = ["ventas", "clientes", "compras", "proveedores"];
+
+function exportarRespaldo() {
+  const datos = {};
+  CLAVES.forEach(k => datos[k] = leer(k));
+  const blob = new Blob([JSON.stringify(datos, null, 2)], {type: "application/json"});
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = "respaldo-ventas-" + hoyLocal() + ".json";
+  enlace.click();
+}
+
+function importarRespaldo(input) {
+  const archivo = input.files[0];
+  if (!archivo) return;
+  const lector = new FileReader();
+  lector.onload = () => {
+    try {
+      const datos = JSON.parse(lector.result);
+      if (!confirm("Esto reemplaza los datos actuales de este dispositivo. ¿Continuar?")) return;
+      CLAVES.forEach(k => escribir(k, Array.isArray(datos[k]) ? datos[k] : []));
+      location.reload();
+    } catch (e) {
+      toast("El archivo no es un respaldo válido.");
+    }
+  };
+  lector.readAsText(archivo);
+  input.value = "";
+}
+
+/* =====================================================
+   VENTAS
+   ===================================================== */
+let ventas = leer("ventas");
+let editandoId = null;
+
+function calcularTotal() {
+  const total = parseFloat($("cantidad").value || 0) * parseFloat($("precio").value || 0);
+  $("totalPreview").textContent = dinero(total);
+}
+
+function estadoVenta(v) {
+  if (v.estado === "Cobrado") return "Cobrado";
+  if (!v.fechaVencimiento) return v.estado || "Cotizado";
+
+  const dias = diasHasta(v.fechaVencimiento);
+  if (dias < 0) return "Vencido";
+  if ((v.estado === "Facturado" || v.estado === "Entregado") && dias <= 5) return "Por vencer";
+
+  return v.estado || "Cotizado";
+}
+
+function claseEstado(estado) {
+  return ({
+    "Cotizado": "gris", "OC recibida": "azul", "Entregado": "violeta",
+    "Facturado": "amarillo", "Por vencer": "naranja", "Vencido": "rojo", "Cobrado": "verde"
+  })[estado] || "gris";
+}
+
+function guardarTodo() { escribir("ventas", ventas); }
+
+function limpiarFormularioVenta() {
+  ["cliente","oc","fechaOC","fechaEntrega","numeroRemito","fechaFactura","numeroFactura",
+   "fechaVencimiento","contactoPagos","notas"].forEach(id => $(id).value = "");
+  $("producto").value = "Precinto Nifty Lock 30 x 1,8 mm";
+  $("cantidad").value = 3;
+  $("precio").value = 293.54;
+  $("remitoFirmado").value = "No";
+}
+
+function nuevaVenta() {
+  mostrarPestana("ventas");
+  editandoId = null;
+  limpiarFormularioVenta();
+  $("tituloForm").textContent = "Nueva venta";
+  abrirModalVenta();
+}
+
+function abrirModalVenta() {
+  calcularTotal();
+  $("modal-venta").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+
+function cerrarModalVenta() {
+  editandoId = null;
+  $("modal-venta").classList.remove("on");
+  document.body.style.overflow = "";
+}
+
+function guardarVenta() {
+  const venta = {
+    id: editandoId || Date.now(),
+    cliente: $("cliente").value.trim(),
+    producto: $("producto").value,
+    cantidad: parseFloat($("cantidad").value || 0),
+    precio: parseFloat($("precio").value || 0),
+    oc: $("oc").value.trim(),
+    fechaOC: $("fechaOC").value,
+    fechaEntrega: $("fechaEntrega").value,
+    numeroRemito: $("numeroRemito").value,
+    remitoFirmado: $("remitoFirmado").value,
+    fechaFactura: $("fechaFactura").value,
+    numeroFactura: $("numeroFactura").value,
+    fechaVencimiento: $("fechaVencimiento").value,
+    contactoPagos: $("contactoPagos").value,
+    notas: $("notas").value,
+    estado: "OC recibida"
+  };
+
+  if (!venta.cliente || !venta.oc) {
+    toast("Completá al menos cliente y número de OC.");
+    return;
+  }
+
+  if (editandoId) {
+    const i = ventas.findIndex(v => v.id === editandoId);
+    venta.estado = ventas[i].estado;
+    ventas[i] = venta;
+  } else {
+    ventas.push(venta);
+  }
+
+  guardarTodo();
+  cerrarModalVenta();
+  render();
+  toast("Venta guardada");
+}
+
+function cambiarEstado(id, nuevoEstado) {
+  const venta = ventas.find(v => v.id === id);
+  if (venta) {
+    venta.estado = nuevoEstado;
+    guardarTodo();
+    render();
+  }
+}
+
+function editarVenta(id) {
+  const v = ventas.find(x => x.id === id);
+  if (!v) return;
+
+  editandoId = id;
+  $("cliente").value = v.cliente;
+  $("producto").value = v.producto;
+  $("cantidad").value = v.cantidad;
+  $("precio").value = v.precio;
+  $("oc").value = v.oc;
+  $("fechaOC").value = v.fechaOC || "";
+  $("fechaEntrega").value = v.fechaEntrega || "";
+  $("numeroRemito").value = v.numeroRemito || "";
+  $("remitoFirmado").value = v.remitoFirmado || "No";
+  $("fechaFactura").value = v.fechaFactura || "";
+  $("numeroFactura").value = v.numeroFactura || "";
+  $("fechaVencimiento").value = v.fechaVencimiento || "";
+  $("contactoPagos").value = v.contactoPagos || "";
+  $("notas").value = v.notas || "";
+  $("tituloForm").textContent = "Editar venta";
+
+  abrirModalVenta();
+}
+
+function eliminarVenta(id) {
+  if (!confirm("¿Eliminar esta venta?")) return;
+  ventas = ventas.filter(v => v.id !== id);
+  guardarTodo();
+  render();
+}
+
+function generarReclamo(v) {
+  const total = totalVenta(v).toLocaleString("es-AR", {minimumFractionDigits: 2});
+
+  return `Hola, consulto por la factura N.º ${v.numeroFactura || "___"} por $${total}, vinculada a la OC N.º ${v.oc}, cuya fecha de vencimiento fue el ${fechaOBlancos(v.fechaVencimiento)}.
+
+Remito N.º ${v.numeroRemito || "___"}, entrega realizada el ${fechaOBlancos(v.fechaEntrega)}.
+
+¿Podrían confirmarme el estado del pago o la fecha estimada de transferencia?
+
+Adjunto nuevamente factura, remito y OC. Gracias.`;
+}
+
+function copiarReclamo(id) {
+  const v = ventas.find(x => x.id === id);
+  if (v) copiarTexto(generarReclamo(v), "Reclamo copiado. Pegalo en WhatsApp o correo.");
+}
+
+function verReclamo(id) {
+  const v = ventas.find(x => x.id === id);
+  if (!v) return;
+  const caja = $("reclamo-" + id);
+  caja.classList.toggle("hidden");
+  caja.textContent = generarReclamo(v);
+}
+
+function exportarCSV() {
+  if (!ventas.length) {
+    toast("No hay ventas para exportar.");
+    return;
+  }
+
+  const encabezados = [
+    "Cliente", "Producto", "Cantidad", "Precio", "Total", "OC",
+    "Fecha OC", "Entrega", "Remito", "Remito firmado",
+    "Factura", "Fecha factura", "Vencimiento", "Estado", "Contacto pagos", "Notas"
+  ];
+
+  const filas = ventas.map(v => [
+    v.cliente, v.producto, v.cantidad, v.precio, totalVenta(v), v.oc,
+    v.fechaOC, v.fechaEntrega, v.numeroRemito, v.remitoFirmado,
+    v.numeroFactura, v.fechaFactura, v.fechaVencimiento, estadoVenta(v),
+    v.contactoPagos, v.notas
+  ]);
+
+  const csv = [encabezados, ...filas]
+    .map(fila => fila.map(campo => `"${String(campo ?? "").replace(/"/g, '""')}"`).join(";"))
+    .join("\n");
+
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = "seguidor-cobros.csv";
+  enlace.click();
+}
+
+function actualizarResumen() {
+  let pendiente = 0, vencido = 0, cobrado = 0;
+  ventas.forEach(v => {
+    const e = estadoVenta(v), t = totalVenta(v);
+    if (e === "Cobrado") cobrado += t;
+    else if (e === "Vencido") vencido += t;
+    else if (v.estado === "Facturado" || e === "Por vencer") pendiente += t;
+  });
+  $("resPendiente").textContent = dinero(pendiente);
+  $("resVencido").textContent = dinero(vencido);
+  $("resCobrado").textContent = dinero(cobrado);
+}
+
+function render() {
+  actualizarResumen();
+
+  const texto = $("buscador").value.toLowerCase().trim();
+  const filtro = $("filtro").value;
+  const lista = $("lista");
+
+  const filtradas = ventas.filter(v => {
+    const estado = estadoVenta(v);
+    const coincideTexto =
+      (v.cliente || "").toLowerCase().includes(texto) ||
+      (v.oc || "").toLowerCase().includes(texto) ||
+      (v.numeroRemito || "").toLowerCase().includes(texto) ||
+      (v.numeroFactura || "").toLowerCase().includes(texto);
+    return coincideTexto && (!filtro || estado === filtro);
+  }).sort((a, b) => b.id - a.id);
+
+  if (!filtradas.length) {
+    lista.innerHTML = '<div class="vacio">No hay ventas para mostrar.<br>Tocá <b>+ Venta</b> para cargar la primera.</div>';
+    return;
+  }
+
+  lista.innerHTML = filtradas.map(v => {
+    const estado = estadoVenta(v);
+    return `
+      <div class="card venta">
+        <div class="head">
+          <div>
+            <h3>${esc(v.cliente)}</h3>
+            <div class="prod">${esc(v.producto)}</div>
+            <span class="pill ${claseEstado(estado)}">${estado}</span>
+          </div>
+          <div class="monto">${dinero(totalVenta(v))}</div>
+        </div>
+        <p class="small">
+          OC <b>${esc(v.oc)}</b> · ${v.cantidad} packs<br>
+          Entrega ${fecha(v.fechaEntrega)} · Remito ${esc(v.numeroRemito) || "—"} (firmado: ${esc(v.remitoFirmado)})<br>
+          Factura ${esc(v.numeroFactura) || "—"} · Vence ${fecha(v.fechaVencimiento)}<br>
+          Pagos: ${esc(v.contactoPagos) || "—"}
+          ${v.notas ? "<br>" + esc(v.notas) : ""}
+        </p>
+
+        <div class="acciones">
+          <button class="btn sm o" onclick="cambiarEstado(${v.id}, 'Entregado')">Entregado</button>
+          <button class="btn sm o" onclick="cambiarEstado(${v.id}, 'Facturado')">Facturado</button>
+          <button class="btn sm ok" onclick="cambiarEstado(${v.id}, 'Cobrado')">Cobrado</button>
+        </div>
+        <div class="acciones" style="margin-top:8px">
+          <button class="btn sm warn" onclick="verReclamo(${v.id})">Ver reclamo</button>
+          <button class="btn sm warn" onclick="copiarReclamo(${v.id})">Copiar reclamo</button>
+          <button class="btn sm o" onclick="editarVenta(${v.id})">Editar</button>
+          <button class="btn sm del" onclick="eliminarVenta(${v.id})">Eliminar</button>
+        </div>
+
+        <div id="reclamo-${v.id}" class="reclamo hidden"></div>
+      </div>`;
+  }).join("");
+}
+
+/* =====================================================
+   CLIENTES
+   ===================================================== */
+let clientes = leer("clientes");
+let compras = leer("compras");
+let proveedores = leer("proveedores");
+let mensajeActual = "";
+
+function guardarDatos() {
+  escribir("clientes", clientes);
+  escribir("compras", compras);
+  escribir("proveedores", proveedores);
+}
+
+function guardarCliente() {
+  const nombre = $("clienteNombre").value.trim();
+  if (!nombre) return toast("Escribí el nombre del cliente.");
+
+  clientes.push({
+    id: Date.now(),
+    nombre,
+    rubro: $("clienteRubro").value,
+    whatsapp: $("clienteWhatsApp").value,
+    correo: $("clienteCorreo").value,
+    zona: $("clienteZona").value,
+    ultimoContacto: $("clienteUltimoContacto").value,
+    notas: $("clienteNotas").value
+  });
+
+  guardarDatos();
+  limpiarCampos(["clienteNombre","clienteRubro","clienteWhatsApp","clienteCorreo","clienteZona","clienteUltimoContacto","clienteNotas"]);
+  renderClientes();
+  toast("Cliente guardado");
+}
+
+function guardarCompra() {
+  const clienteId = parseInt($("compraCliente").value);
+  const cliente = clientes.find(c => c.id === clienteId);
+  if (!cliente) return toast("Elegí un cliente (o cargá uno primero).");
+
+  compras.push({
+    id: Date.now(),
+    clienteId,
+    cliente: cliente.nombre,
+    producto: $("compraProducto").value,
+    cantidad: parseFloat($("compraCantidad").value || 0),
+    precio: parseFloat($("compraPrecio").value || 0),
+    fecha: $("compraFecha").value,
+    oc: $("compraOC").value
+  });
+
+  guardarDatos();
+  $("compraOC").value = "";
+  renderClientes();
+  $("compraCliente").value = clienteId;
+  toast("Compra guardada");
+}
+
+function eliminarCliente(id) {
+  if (!confirm("¿Eliminar este cliente y sus compras?")) return;
+  clientes = clientes.filter(c => c.id !== id);
+  compras = compras.filter(x => x.clienteId !== id);
+  guardarDatos();
+  renderClientes();
+}
+
+function renderClientes() {
+  const cont = $("listaClientes");
+  const select = $("compraCliente");
+
+  select.innerHTML = '<option value="">Elegí cliente</option>' +
+    clientes.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join("");
+
+  if (!clientes.length) {
+    cont.innerHTML = '<div class="vacio">Todavía no hay clientes cargados.</div>';
+    return;
+  }
+
+  cont.innerHTML = clientes.map(c => {
+    const comprasCliente = compras.filter(x => x.clienteId === c.id);
+    const totalComprado = comprasCliente.reduce((s, x) => s + x.cantidad * x.precio, 0);
+
+    const detalle = comprasCliente.length
+      ? comprasCliente.map(x => `
+          <tr>
+            <td>${fecha(x.fecha)}</td>
+            <td>${esc(x.producto)}</td>
+            <td>${x.cantidad}</td>
+            <td>${dinero(x.cantidad * x.precio)}</td>
+            <td>${esc(x.oc) || "—"}</td>
+          </tr>`).join("")
+      : '<tr><td colspan="5">Sin compras registradas.</td></tr>';
+
+    return `
+      <div class="card">
+        <h3>${esc(c.nombre)}</h3>
+        <p class="small" style="margin-top:0">
+          ${esc(c.rubro) || "—"} · ${esc(c.zona) || "—"}<br>
+          WhatsApp ${esc(c.whatsapp) || "—"} · ${esc(c.correo) || "—"}<br>
+          Último contacto ${fecha(c.ultimoContacto)} · Total comprado <b>${dinero(totalComprado)}</b>
+        </p>
+        ${c.notas ? `<p class="small">${esc(c.notas)}</p>` : ""}
+        <div class="tabla-scroll">
+          <table>
+            <tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Total</th><th>OC</th></tr>
+            ${detalle}
+          </table>
+        </div>
+        <div class="acciones" style="margin-top:12px">
+          <button class="btn sm del" onclick="eliminarCliente(${c.id})">Eliminar</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+/* =====================================================
+   WHATSAPP
+   ===================================================== */
+function generarMensaje(tipo) {
+  const cliente = $("waCliente").value || "cliente";
+  const producto = $("waProducto").value || "precintos de seguridad";
+  const cantidad = $("waCantidad").value || "___";
+  const precio = parseFloat($("waPrecio").value || 0);
+  const total = dinero((parseFloat(cantidad) || 0) * precio);
+  const oc = $("waOC").value || "___";
+  const factura = $("waFactura").value || "___";
+  const monto = dinero(parseFloat($("waMonto").value || 0));
+  const vencimiento = fechaOBlancos($("waVencimiento").value);
+
+  if (tipo === "presentacion") {
+    mensajeActual = `Hola ${cliente}, soy [tu nombre]. Trabajo con precintos de seguridad para transporte, depósitos, logística y comercios.
+
+Tenemos precintos plásticos, de cable de acero, metálicos y de alta seguridad.
+
+¿Qué tipo de precinto utilizan o qué cantidad necesitan aproximadamente? Les preparo una cotización.
+
+Pueden escribirme por WhatsApp: https://wa.me/5492615692297`;
+  }
+
+  if (tipo === "cotizacion") {
+    mensajeActual = `Hola ${cliente}, le envío la cotización solicitada:
+
+Producto: ${producto}
+Cantidad: ${cantidad}
+Precio unitario: ${dinero(precio)}
+Total: ${total}
+
+La cotización incluye factura C electrónica. Para coordinar la entrega, necesito la orden de compra con número.
+
+Quedo a disposición.`;
+  }
+
+  if (tipo === "seguimiento") {
+    mensajeActual = `Hola ${cliente}, consulto si pudo ver la cotización por ${producto}.
+
+Si necesitan ajustar cantidad, medida o fecha de entrega, puedo preparar una nueva propuesta.
+
+Quedo atento.`;
+  }
+
+  if (tipo === "reclamo") {
+    mensajeActual = `Hola ${cliente}, consulto por la factura N.º ${factura} por ${monto}, vinculada a la OC N.º ${oc}, cuya fecha de vencimiento fue el ${vencimiento}.
+
+¿Podrían confirmarme el estado del pago o la fecha estimada de transferencia?
+
+Adjunto nuevamente factura, remito y OC. Gracias.`;
+  }
+
+  const div = $("mensajeGenerado");
+  div.classList.remove("hidden");
+  div.textContent = mensajeActual;
+}
+
+function copiarMensaje() {
+  if (!mensajeActual) return toast("Primero generá un mensaje.");
+  copiarTexto(mensajeActual, "Mensaje copiado");
+}
+
+function abrirWhatsApp() {
+  if (!mensajeActual) return toast("Primero generá un mensaje.");
+  const telefono = $("waTelefono").value.replace(/\D/g, "");
+  window.open("https://wa.me/" + telefono + "?text=" + encodeURIComponent(mensajeActual), "_blank");
+}
+
+/* =====================================================
+   RECLAMO (formulario libre)
+   ===================================================== */
+function armarReclamoForm() {
+  const cliente = $("rcCliente").value || "cliente";
+  const factura = $("rcFactura").value || "___";
+  const monto = parseFloat($("rcMonto").value || 0).toLocaleString("es-AR", { minimumFractionDigits: 2 });
+  const oc = $("rcOC").value || "___";
+  const vencimiento = fechaOBlancos($("rcVencimiento").value);
+  const remito = $("rcRemito").value || "___";
+  const entrega = fechaOBlancos($("rcEntrega").value);
+
+  return `Hola ${cliente}, consulto por la factura N.º ${factura} por $${monto}, vinculada a la OC N.º ${oc}, cuya fecha de vencimiento fue el ${vencimiento}.
+
+Remito N.º ${remito}, entrega realizada el ${entrega}.
+
+¿Podrían confirmarme el estado del pago o la fecha estimada de transferencia?
+
+Adjunto nuevamente factura, remito y OC. Gracias.`;
+}
+
+function verReclamoForm() {
+  const div = $("rcMensaje");
+  div.textContent = armarReclamoForm();
+  div.classList.remove("hidden");
+}
+
+function copiarReclamoForm() {
+  verReclamoForm();
+  copiarTexto($("rcMensaje").textContent, "Mensaje copiado");
+}
+
+/* =====================================================
+   PROVEEDORES
+   ===================================================== */
+function guardarProveedor() {
+  const nombre = $("provNombre").value.trim();
+  if (!nombre) return toast("Escribí el nombre del proveedor.");
+
+  proveedores.push({
+    id: Date.now(),
+    nombre,
+    producto: $("provProducto").value,
+    costo: parseFloat($("provCosto").value || 0),
+    fecha: $("provFecha").value,
+    contacto: $("provContacto").value,
+    notas: $("provNotas").value
+  });
+
+  guardarDatos();
+  limpiarCampos(["provNombre","provProducto","provCosto","provFecha","provContacto","provNotas"]);
+  renderProveedores();
+  toast("Registro guardado");
+}
+
+function eliminarProveedor(id) {
+  if (!confirm("¿Eliminar este registro?")) return;
+  proveedores = proveedores.filter(p => p.id !== id);
+  guardarDatos();
+  renderProveedores();
+}
+
+function renderProveedores() {
+  const cont = $("listaProveedores");
+
+  if (!proveedores.length) {
+    cont.innerHTML = '<div class="vacio">No hay proveedores registrados.</div>';
+    return;
+  }
+
+  cont.innerHTML = proveedores.map(p => `
+    <div class="card">
+      <h3>${esc(p.nombre)}</h3>
+      <p class="small" style="margin-top:0">
+        ${esc(p.producto) || "—"} · Costo <b>${dinero(p.costo)}</b><br>
+        ${fecha(p.fecha)} · ${esc(p.contacto) || "—"}
+      </p>
+      ${p.notas ? `<p class="small">${esc(p.notas)}</p>` : ""}
+      <div class="acciones" style="margin-top:12px">
+        <button class="btn sm del" onclick="eliminarProveedor(${p.id})">Eliminar</button>
+      </div>
+    </div>`).join("");
+}
+
+/* =====================================================
+   RENTABILIDAD
+   ===================================================== */
+function calcularRentabilidad() {
+  const cantidad = parseFloat($("rentCantidad").value || 0);
+  const costoUnitario = parseFloat($("rentCostoUnitario").value || 0);
+  const precioVenta = parseFloat($("rentPrecioVenta").value || 0);
+  const envio = parseFloat($("rentEnvio").value || 0);
+  const descuento = parseFloat($("rentDescuento").value || 0);
+
+  const ingresos = cantidad * precioVenta - descuento;
+  const costos = cantidad * costoUnitario + envio;
+  const ganancia = ingresos - costos;
+  const margen = ingresos ? (ganancia / ingresos) * 100 : 0;
+
+  const div = $("resultadoRentabilidad");
+  div.classList.remove("hidden");
+  div.innerHTML = `
+    <div class="fila"><span>Ingresos</span><strong>${dinero(ingresos)}</strong></div>
+    <div class="fila"><span>Costos</span><strong>${dinero(costos)}</strong></div>
+    <div class="fila"><span>Ganancia</span><strong style="color:${ganancia > 0 ? "var(--verde)" : "var(--rojo)"}">${dinero(ganancia)}</strong></div>
+    <div class="fila"><span>Margen</span><strong>${margen.toFixed(1)}%</strong></div>
+    <div class="veredicto" style="color:${ganancia > 0 ? "var(--verde)" : "var(--rojo)"}">${ganancia > 0 ? "La venta deja ganancia." : "Atención: la venta no deja ganancia."}</div>
+  `;
+}
+
+/* =====================================================
+   PWA: instalación y service worker
+   ===================================================== */
+let deferredPrompt = null;
+const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const instalada = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+function bannerCerrado() { try { return localStorage.getItem("pwaNo") === "1"; } catch (e) { return false; } }
+
+function cerrarBanner(recordar) {
+  $("pwa-banner").style.display = "none";
+  if (recordar) { try { localStorage.setItem("pwaNo", "1"); } catch (e) {} }
+}
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $("pwa-install-btn").style.display = "flex";
+  if (!bannerCerrado()) $("pwa-banner").style.display = "flex";
+});
+
+function installPWA() {
+  cerrarBanner(false);
+  $("pwa-install-btn").style.display = "none";
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+}
+
+window.addEventListener("appinstalled", () => {
+  cerrarBanner(false);
+  $("pwa-install-btn").style.display = "none";
+  toast("App instalada");
+});
+
+// iPhone/iPad no tienen botón de instalar: se explica el paso a paso
+if (esIOS && !instalada && !bannerCerrado()) {
+  $("pba-sub").textContent = "Tocá Compartir y luego “Agregar a inicio”.";
+  $("pba-install").style.display = "none";
+  $("pwa-banner").style.display = "flex";
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
+/* ---------- inicio ---------- */
+limpiarFormularioVenta();
+render();
+renderClientes();
+renderProveedores();
+document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModalVenta(); });
+</script>
+
+</body>
+</html>
